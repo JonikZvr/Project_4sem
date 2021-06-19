@@ -1,5 +1,5 @@
 import telebot
-bot = telebot.TeleBot(1834705224:AAF_PjtpCiJYIweJWBKZFSqg6LaAmJrb63s)
+bot = telebot.TeleBot('1834705224:AAF_PjtpCiJYIweJWBKZFSqg6LaAmJrb63s')
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
