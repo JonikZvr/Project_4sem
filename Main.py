@@ -3,7 +3,9 @@ bot = telebot.TeleBot('1834705224:AAF_PjtpCiJYIweJWBKZFSqg6LaAmJrb63s')
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    bot.reply_to(message, f'Я бот. Приятно познакомиться, {message.from_user.first_name}')
+    bot.reply_to(message, f'Я бот, созданный для помощи людям, собирающимся поехать на шашлыки. Приятно познакомиться, {message.from_user.first_name}')
+    bot.reply_to(message,
+                 f'{message.from_user.first_name}, какое мясо вы предпочитаете: свинину, говядину или баранину?')
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
