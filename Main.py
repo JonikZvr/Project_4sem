@@ -423,7 +423,7 @@ def main_menu(call):
 
         bot.send_message(
             chat_id=uid,
-            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+            text=f'Говядина лопатка, без кости, {m} кг {price_i * m} руб.')
 
         f = open('out.jpg', 'wb')
         f.write(urllib.request.urlopen(
@@ -454,7 +454,7 @@ def main_menu(call):
 
         bot.send_message(
             chat_id=uid,
-            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+            text=f'Ягнёнок на жаркое Мясо Есть! охл., {m} кг {price_i * m} руб.')
 
         f = open('out.jpg', 'wb')
         f.write(urllib.request.urlopen(
@@ -485,7 +485,7 @@ def main_menu(call):
 
         bot.send_message(
             chat_id=uid,
-            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+            text=f'Филе грудки цыпленка, {m} кг {price_i * m} руб.')
 
         f = open('out.jpg', 'wb')
         f.write(urllib.request.urlopen(
