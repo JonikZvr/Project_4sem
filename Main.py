@@ -1,5 +1,7 @@
 import telebot
 import urllib
+import requests
+from bs4 import BeautifulSoup
 
 from keyboa import Keyboa
 bot = telebot.TeleBot('1834705224:AAF_PjtpCiJYIweJWBKZFSqg6LaAmJrb63s')
@@ -72,7 +74,7 @@ def callback_inline(call):
 
     m = round(n * k, 1)
 
-    var = [{'Рецепт приготовления':'30'}, {'Список покупок':'31'}, {'Рекомендованная цена':'32'}]
+    var = [{'Рецепт приготовления':'30'}, {'Список покупок':'31'}, {'Рекомендованная цена мяса':'32'}]
 
     kb_recipe = Keyboa(items=var, copy_text_to_callback=True).keyboard
 
@@ -370,11 +372,128 @@ def callback_inline(call):
         )
 
 
-    elif call.data == '32':
+    elif call.data == '32' and meat_t == 0:
+
+        url = 'https://vkusvill.ru/goods/vyrezka-svinaya-gp-27633.html'
+
+        page = requests.get(url)
+
+        variable = BeautifulSoup(page.text, "html.parser")
+
+        Price = variable.find("div",
+                              {"class": "Product__priceItem Product__priceItem--main js-product-price-item"}).text
+
+        Price = Price.replace(' ', '')
+        price_i = float(Price[0: int(len(Price) / 2) - 4])
+
         bot.send_message(
             chat_id=uid,
-            text=f'Цена взята с сайта metro-cc.ru \n Страница всё ещё находится в разработке')
+            text=f'Цена взята с сайта https://vkusvill.ru')
 
+        bot.send_message(
+            chat_id=uid,
+            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+
+        f = open('out.jpg', 'wb')
+        f.write(urllib.request.urlopen(
+            'https://img.vkusvill.ru/site/27633_1_27056.jpg?205').read())
+        f.close()
+        img = open('out.jpg', 'rb')
+        bot.send_photo(uid, img)
+        img.close()
+
+
+    elif call.data == '32' and meat_t == 1:
+
+        url = 'https://vkusvill.ru/goods/govyadina-lopatka-bez-kosti-501.html'
+
+        page = requests.get(url)
+
+        variable = BeautifulSoup(page.text, "html.parser")
+
+        Price = variable.find("div",
+                              {"class": "Product__priceItem Product__priceItem--main js-product-price-item"}).text
+
+        Price = Price.replace(' ', '')
+        price_i = float(Price[0: int(len(Price) / 2) - 4])
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Цена взята с сайта https://vkusvill.ru')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+
+        f = open('out.jpg', 'wb')
+        f.write(urllib.request.urlopen(
+            'https://img.vkusvill.ru/site/501_1_50544.JPG?175').read())
+        f.close()
+        img = open('out.jpg', 'rb')
+        bot.send_photo(uid, img)
+        img.close()
+
+
+    elif call.data == '32' and meat_t == 2:
+
+        url = 'https://vkusvill.ru/goods/yagnyenok-na-zharkoe-myaso-est-okhl-200-nbsp-g--45650.html'
+
+        page = requests.get(url)
+
+        variable = BeautifulSoup(page.text, "html.parser")
+
+        Price = variable.find("div",
+                              {"class": "Product__priceItem Product__priceItem--main js-product-price-item"}).text
+
+        Price = Price.replace(' ', '')
+        price_i = float(Price[0: int(len(Price) / 2) - 4]) * 5
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Цена взята с сайта https://vkusvill.ru')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+
+        f = open('out.jpg', 'wb')
+        f.write(urllib.request.urlopen(
+            'https://img.vkusvill.ru/site/45650_1_45673.jpg?127').read())
+        f.close()
+        img = open('out.jpg', 'rb')
+        bot.send_photo(uid, img)
+        img.close()
+
+
+    elif call.data == '32' and meat_t == 3:
+
+        url = 'https://vkusvill.ru/goods/file-grudki-tsyplenka-488.html'
+
+        page = requests.get(url)
+
+        variable = BeautifulSoup(page.text, "html.parser")
+
+        Price = variable.find("div",
+                              {"class": "Product__priceItem Product__priceItem--main js-product-price-item"}).text
+
+        Price = Price.replace(' ', '')
+        price_i = float(Price[0: int(len(Price) / 2) - 4])
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Цена взята с сайта https://vkusvill.ru')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
+
+        f = open('out.jpg', 'wb')
+        f.write(urllib.request.urlopen(
+            'https://img.vkusvill.ru/site/488_1_36153.jpg?25').read())
+        f.close()
+        img = open('out.jpg', 'rb')
+        bot.send_photo(uid, img)
+        img.close()
 
     back = [{'Назад': '23'}]
 
