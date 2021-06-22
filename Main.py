@@ -31,7 +31,7 @@ def send_welcome(message):
         text='Какое мясо вы предпочитаете: свинину, говядину,баранину или курицу?')
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('1'))
-def callback_inline(call):
+def meat_finder(call):
     global meat_t, k
 
     if call.data == '10':
@@ -63,7 +63,7 @@ def guest_amount(message):
         text='Как долго планируете отдыхать?')
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('2'))
-def callback_inline(call):
+def last_menu(call):
     global k
     if call.data == '21':
        k += 0.1
@@ -83,7 +83,7 @@ def callback_inline(call):
         text=f'Рекомендованное количество мяса - {m} кг')
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('3'))
-def callback_inline(call):
+def main_menu(call):
     global m, uid, meat_t
 
     if call.data == '30' and meat_t == 0:
