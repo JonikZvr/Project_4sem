@@ -98,7 +98,7 @@ def last_menu(call):
 
     m = round(n * k, 1)
 
-    var = [{'Рецепт приготовления':'30'}, {'Список покупок':'31'}, {'Рекомендованная цена мяса':'32'}]
+    var = [{'Рецепт приготовления':'30'}, {'Список покупок':'31'}, {'Рекомендованная цена продуктов':'32'}]
 
     kb_recipe = Keyboa(items=var, copy_text_to_callback=True).keyboard
 
@@ -108,12 +108,13 @@ def last_menu(call):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('3'))
 def main_menu(call):
-    global m, uid, meat_t
+    global m, uid, meat_t, n
+    price_total = 0
 
     if call.data == '30' and meat_t == 0:
         bot.send_message(
             chat_id=uid,
-            text=f'В миску наливаем растительное масло, добавляем {round(2 / 3 * m)} ч. л. черного перца, {round(2 / 3 * m)} ст. л. соевого соуса,{round(1 / 3 * m)} ст. л. соли, {round(1 / 9 * m, 1)} стакана сладкого соуса чили, {round(2 / 3 * m)} ст. ложки семян кинзы, {round(2 / 3 * m)} ч. л. сладкой паприки, {round(4 / 3 * m)} зубчика измельченного чеснока. Хорошо размешиваем.')
+            text=f'В миску наливаем растительное масло, добавляем {round(2 / 3 * m)} ч. л. черного перца, {round(2 / 3 * m)} ст. л. соевого соуса,{round(1 / 3 * m)} ст. л. соли, {round(1 / 9 * m, 1)} стакана сладкого соуса чили, {round(2 / 3 * m)} ч. л. сладкой паприки, {round(4 / 3 * m)} зубчика измельченного чеснока. Хорошо размешиваем.')
 
         photo_upload('https://www.videoculinary.ru/wp-content/uploads/2011/06/shashlyk-iz-file-svinina_1.jpg')
 
@@ -148,15 +149,13 @@ def main_menu(call):
                  f"Соевый соус - {round(2 / 3 * m)} ст. л."
                  '\n'
                  f"Сладкий соус чили - {round(1 / 9 * m, 1)} стакана"
-                 '\n'
-                 f"Молотые семена кинзы - {round(2 / 3 * m)} ст. ложки"
         )
 
 
     elif call.data == '30' and meat_t == 1:
         bot.send_message(
             chat_id=uid,
-            text=f'Готовим маринад: кладём в миску {round(1.5 / 2.5 * m, 1)} с. л. семян кинзы, {round(1.5 / 2.5 * m, 1)} с. л. зиры, {round(1.5 / 2.5 * m, 1)} с. л. соли, {round(2 / 2.5 * m, 1)} ч. л. молотой сладкой паприки, {round(2 / 2.5 * m, 1)} ч. л. молотого чёрного перца..')
+            text=f'Готовим маринад: кладём в миску {round(1.5 / 2.5 * m, 1)} с. л. зиры, {round(1.5 / 2.5 * m, 1)} с. л. соли, {round(2 / 2.5 * m, 1)} ч. л. молотой сладкой паприки, {round(2 / 2.5 * m, 1)} ч. л. молотого чёрного перца..')
 
         photo_upload('https://www.videoculinary.ru/wp-content/uploads/2011/06/shashlyk-iz-govyazhego-antrekota_1-1-300x225.jpg')
 
@@ -203,8 +202,6 @@ def main_menu(call):
             text=f"Говяжий антрекот - {m} кг"
                  '\n'
                  f"Лук - {round(4 / 2.5 * m)} шт"
-                 '\n'
-                 f"Кинза семена - {round(1.5 / 2.5 * m)} ст. л."
                  '\n'
                  f"Зира - {round(1.5 / 2.5 * m)} ст. л."
                  '\n'
@@ -313,12 +310,84 @@ def main_menu(call):
             text=f'Цена взята с сайта https://vkusvill.ru')
 
         price_i = price_find('https://vkusvill.ru/goods/vyrezka-svinaya-gp-27633.html')
+        price_total += price_i * m
 
         bot.send_message(
             chat_id=uid,
             text=f'Вырезка свиная ГП, {m} кг {price_i * m} руб.')
 
         photo_upload('https://img.vkusvill.ru/site/27633_1_27056.jpg?205')
+
+        price_i = price_find('https://vkusvill.ru/goods/maslo-podsolnechnoe-neraf-vysokooleinovoe-steklo-36966.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Масло подсолнечное нераф. высокоолеиновое, стекло {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/36966_1_36791.jpg?116')
+
+        price_i = price_find('https://vkusvill.ru/goods/perets-chernyy-molotyy-10-nbsp-g-16844.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный молотый, 10 г, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16844_1_14951.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/sol-pishchevaya-iletskaya-pomol-1-31619.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль пищевая «Илецкая», помол №1, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/31619_1_29109.jpg?36')
+
+        price_i = price_find('https://vkusvill.ru/goods/paprika-molotaya-16360.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка молотая, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16360_1_14945.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/chesnok-17456.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Чеснок, {price_i} руб./ кг.')
+
+        photo_upload('https://img.vkusvill.ru/site/17456_1_33359.jpg?5')
+
+        price_i = price_find('https://vkusvill.ru/goods/sous-soevyy-16353.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соус соевый, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16353_1_36808.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/sous-chim-chim-sladkiy-chili-300-nbsp-g-48721.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соус Чим-Чим Сладкий Чили, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/48721_1_53346.jpg?113')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
     elif call.data == '32' and meat_t == 1:
@@ -328,12 +397,75 @@ def main_menu(call):
             text=f'Цена взята с сайта https://vkusvill.ru')
 
         price_i = price_find('https://vkusvill.ru/goods/govyadina-lopatka-bez-kosti-501.html')
+        price_total += price_i * m
 
         bot.send_message(
             chat_id=uid,
             text=f'Говядина лопатка, без кости, {m} кг {price_i * m} руб.')
 
         photo_upload('https://img.vkusvill.ru/site/501_1_50544.JPG?175')
+
+        price_i = price_find('https://vkusvill.ru/goods/luk-molodoy-repchatyy-22788.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Лук молодой репчатый {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/22788_1_54205.JPG?13')
+
+        price_i = price_find('https://vkusvill.ru/goods/zira-38455.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Зира {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/38455_1_41520.jpg?156')
+
+        price_i = price_find('https://vkusvill.ru/goods/paprika-molotaya-16360.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка молотая {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16360_1_14945.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/perets-chernyy-molotyy-10-nbsp-g-16844.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный молотый, 10 г, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16844_1_14951.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/sol-pishchevaya-iletskaya-pomol-1-31619.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль пищевая «Илецкая», помол №1, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/31619_1_29109.jpg?36')
+
+        price_i = price_find('https://vkusvill.ru/goods/voda-rodnikovaya-gazirovannaya-500-ml-17826.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Вода родниковая газированная, 500 мл, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/17826_1_52539.jpg?102')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
     elif call.data == '32' and meat_t == 2:
@@ -343,12 +475,66 @@ def main_menu(call):
             text=f'Цена взята с сайта https://vkusvill.ru')
 
         price_i = price_find('https://vkusvill.ru/goods/yagnyenok-na-zharkoe-myaso-est-okhl-200-nbsp-g--45650.html')
+        price_total += price_i * m * 5
 
         bot.send_message(
             chat_id=uid,
-            text=f'Ягнёнок на жаркое Мясо Есть! охл., {m} кг {price_i * m} руб.')
+            text=f'Ягнёнок на жаркое Мясо Есть! охл., {m} кг {price_i * m * 5} руб.')
 
         photo_upload('https://img.vkusvill.ru/site/45650_1_45673.jpg?127')
+
+        price_i = price_find('https://vkusvill.ru/goods/salo-belorusskoe-narezka-21722.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Сало баранье курдючное найти почти нереально, поэтому можно использовать это \n Сало «Белорусское», нарезка {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/21722_1_21100.jpg?135')
+
+        price_i = price_find('https://vkusvill.ru/goods/sol-pishchevaya-iletskaya-pomol-1-31619.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль пищевая «Илецкая», помол №1 {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/31619_1_29109.jpg?36')
+
+        price_i = price_find('https://vkusvill.ru/goods/zira-38455.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Зира {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/38455_1_41520.jpg?156')
+
+        price_i = price_find('https://vkusvill.ru/goods/paprika-molotaya-16360.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка молотая {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16360_1_14945.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/perets-chernyy-molotyy-10-nbsp-g-16844.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный молотый, 10 г, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16844_1_14951.jpg?234')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
     elif call.data == '32' and meat_t == 3:
@@ -358,12 +544,75 @@ def main_menu(call):
             text=f'Цена взята с сайта https://vkusvill.ru')
 
         price_i = price_find('https://vkusvill.ru/goods/file-grudki-tsyplenka-488.html')
+        price_total += price_i * m
 
         bot.send_message(
             chat_id=uid,
             text=f'Филе грудки цыпленка, {m} кг {price_i * m} руб.')
 
         photo_upload('https://img.vkusvill.ru/site/488_1_36153.jpg?25')
+
+        price_i = price_find('https://vkusvill.ru/goods/sol-pishchevaya-iletskaya-pomol-1-31619.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль пищевая «Илецкая», помол №1 {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/31619_1_29109.jpg?36')
+
+        price_i = price_find('https://vkusvill.ru/goods/zira-38455.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Зира {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/38455_1_41520.jpg?156')
+
+        price_i = price_find('https://vkusvill.ru/goods/paprika-molotaya-16360.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка молотая {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16360_1_14945.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/perets-chernyy-molotyy-10-nbsp-g-16844.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный молотый, 10 г, {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/16844_1_14951.jpg?234')
+
+        price_i = price_find('https://vkusvill.ru/goods/maslo-podsolnechnoe-neraf-vysokooleinovoe-steklo-36966.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Масло подсолнечное нераф. высокоолеиновое, стекло {price_i} руб.')
+
+        photo_upload('https://img.vkusvill.ru/site/36966_1_36791.jpg?116')
+
+        price_i = price_find('https://vkusvill.ru/goods/chesnok-17456.html')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Чеснок, {price_i} руб./ кг.')
+
+        photo_upload('https://img.vkusvill.ru/site/17456_1_33359.jpg?5')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
     back = [{'Назад': '23'}]
 
