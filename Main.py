@@ -37,7 +37,6 @@ def photo_upload(photo_url):
     img.close()
 
 
-
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     global uid
@@ -53,6 +52,7 @@ def send_welcome(message):
     bot.send_message(
         chat_id=uid, reply_markup=kb_Meat,
         text='Какое мясо вы предпочитаете: свинину, говядину,баранину или курицу?')
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('1'))
 def meat_finder(call):
@@ -86,6 +86,7 @@ def guest_amount(message):
         chat_id=uid, reply_markup=kb_time,
         text='Как долго планируете отдыхать?')
 
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith('2'))
 def last_menu(call):
     global k
@@ -98,13 +99,14 @@ def last_menu(call):
 
     m = round(n * k, 1)
 
-    var = [{'Рецепт приготовления':'30'}, {'Список покупок':'31'}, {'Рекомендованная цена продуктов':'32'}]
+    var = [{'Пошаговый рецепт приготовления':'30'}, {'Ссылка на видео-рецепт приготовления':'33'}, {'Список покупок':'31'}, {'Рекомендованная цена продуктов':'32'}]
 
     kb_recipe = Keyboa(items=var, copy_text_to_callback=True).keyboard
 
     bot.send_message(
         chat_id=uid, reply_markup=kb_recipe,
         text=f'Рекомендованное количество мяса - {m} кг')
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('3'))
 def main_menu(call):
@@ -614,6 +616,35 @@ def main_menu(call):
             chat_id=uid,
             text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
+
+    elif call.data == '33' and meat_t == 0:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/KGuH4CWN3DA?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    elif call.data == '33' and meat_t == 1:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/TtgVFkk4kf4?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    elif call.data == '33' and meat_t == 2:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/NbiAFDRN2oM?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    elif call.data == '33' and meat_t == 3:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/fibrZS7uj1Q?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
     back = [{'Назад': '23'}]
 
     kb_back = Keyboa(items=back, copy_text_to_callback=True).keyboard
@@ -621,5 +652,6 @@ def main_menu(call):
     bot.send_message(
         chat_id=uid, reply_markup=kb_back,
         text=f'Хотите вернуться назад?')
+
 
 bot.polling(none_stop=True)
