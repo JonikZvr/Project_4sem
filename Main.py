@@ -76,15 +76,21 @@ def meat_finder(call):
 @bot.message_handler(content_types=['text'])
 def guest_amount(message):
     global n, uid
-    n = float(message.text)
 
     var = [[{'2-3 часа':'20'}, {'4-6 часов':'21'}], {'от 7 и до победного':'22'}]
 
     kb_time = Keyboa(items=var, copy_text_to_callback=True).keyboard
 
-    bot.send_message(
-        chat_id=uid, reply_markup=kb_time,
-        text='Как долго планируете отдыхать?')
+    if message.text.isdigit():
+        n = float(message.text)
+        bot.send_message(
+            chat_id=uid, reply_markup=kb_time,
+            text='Как долго планируете отдыхать?')
+
+    else:
+        bot.send_message(
+            chat_id=uid,
+            text='Это, конечно, хорошо, но не могли ли бы Вы ввести количество гостей числом, пожалуйста')
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('2'))
