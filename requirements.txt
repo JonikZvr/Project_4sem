@@ -6,3 +6,4 @@ urllib3==1.26.5
 pyTelegramBotAPI==3.7.9
 keyboa==3.0.0
 bs4==0.0.1
+RegEx==2021.4.4

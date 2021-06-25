@@ -2,6 +2,7 @@ import telebot
 import urllib
 import requests
 from bs4 import BeautifulSoup
+import re
 
 from keyboa import Keyboa
 bot = telebot.TeleBot('1834705224:AAF_PjtpCiJYIweJWBKZFSqg6LaAmJrb63s')
@@ -21,11 +22,35 @@ def price_find(url):
     variable = BeautifulSoup(page.text, "html.parser")
 
     Price = variable.find("div",
-                          {"class": "Product__priceItem Product__priceItem--main js-product-price-item"}).text
+                          {"class": "Product__priceItem Product__priceItem--main js-product-price-item"})
 
+    if Price:
+        Price = Price.text
+        Price = Price.replace(' ', '')
+        price_i = float(Price[0: int(len(Price) / 2) - 4])
+        return(price_i)
+    else:
+        price_i = float('0')
+        return (price_i)
+
+def price_find_metrocc(url):
+    page = requests.get(url)
+
+    variable = BeautifulSoup(page.text, "html.parser")
+
+    Price = variable.find("div", {"class": "price-card__price price-card__price--promo"})
+    if Price:
+        Price = Price.text
+
+    else:
+        Price = variable.find("div", {"class": "price-card__price"}).text
+
+    Price = Price.replace('\n', '')
     Price = Price.replace(' ', '')
-    price_i = float(Price[0: int(len(Price) / 2) - 4])
-    return(price_i)
+
+    price = float(re.findall("\d+", Price)[0])
+
+    return(price)
 
 def photo_upload(photo_url):
     f = open('out.jpg', 'wb')
@@ -135,7 +160,6 @@ def last_menu(call):
 @bot.callback_query_handler(func=lambda call: call.data.startswith('3'))
 def main_menu(call):
     global m, uid, meat_t, n
-    price_total = 0
 
     if call.data == '30' and meat_t == 0:
         bot.send_message(
@@ -326,10 +350,64 @@ def main_menu(call):
                  f"Чеснок - {round(2 * m)} зубчика(-ов)"
                  '\n'
                  f"Растительное масло - {round(100 * m)} грамм"
-        )
+        )\
 
 
-    elif call.data == '32' and meat_t == 0:
+    elif call.data == '32':
+        Shop = [
+            [{'ВкусВилл': '40'}, {'Metro Cash&Carry': '41'}]
+        ]
+
+        kb_shop = Keyboa(items=Shop, copy_text_to_callback=True).keyboard
+
+        bot.send_message(
+            chat_id=uid, reply_markup=kb_shop,
+            text='Из какого магазина Вы бы хотели получить цену?')
+
+
+    elif call.data == '33' and meat_t == 0:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/KGuH4CWN3DA?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    elif call.data == '33' and meat_t == 1:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/TtgVFkk4kf4?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    elif call.data == '33' and meat_t == 2:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/NbiAFDRN2oM?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    elif call.data == '33' and meat_t == 3:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'https://youtu.be/fibrZS7uj1Q?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+
+
+    if call.data != '32':
+        back = [{'Назад': '23'}]
+
+        kb_back = Keyboa(items=back, copy_text_to_callback=True).keyboard
+
+        bot.send_message(
+            chat_id=uid, reply_markup=kb_back,
+            text=f'Хотите вернуться назад?')
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('4'))
+def price(call):
+    global m, uid, meat_t, n
+    price_total = 0
+
+    if call.data == '40' and meat_t == 0:
 
         bot.send_message(
             chat_id=uid,
@@ -416,7 +494,7 @@ def main_menu(call):
             text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
-    elif call.data == '32' and meat_t == 1:
+    elif call.data == '40' and meat_t == 1:
 
         bot.send_message(
             chat_id=uid,
@@ -494,7 +572,7 @@ def main_menu(call):
             text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
-    elif call.data == '32' and meat_t == 2:
+    elif call.data == '40' and meat_t == 2:
 
         bot.send_message(
             chat_id=uid,
@@ -563,7 +641,7 @@ def main_menu(call):
             text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
-    elif call.data == '32' and meat_t == 3:
+    elif call.data == '40' and meat_t == 3:
 
         bot.send_message(
             chat_id=uid,
@@ -641,32 +719,334 @@ def main_menu(call):
             text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
-    elif call.data == '33' and meat_t == 0:
+    elif call.data == '41' and meat_t == 0:
 
         bot.send_message(
             chat_id=uid,
-            text=f'https://youtu.be/KGuH4CWN3DA?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+            text=f'Цена взята с сайта https://msk.metro-cc.ru')
 
-
-    elif call.data == '33' and meat_t == 1:
-
-        bot.send_message(
-            chat_id=uid,
-            text=f'https://youtu.be/TtgVFkk4kf4?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
-
-
-    elif call.data == '33' and meat_t == 2:
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/myasnye/svinina/svinina-ohlazhdennaya/vyrezka-vakuumnaya-upakovka-miratorg')
+        price_total += price_i * m
 
         bot.send_message(
             chat_id=uid,
-            text=f'https://youtu.be/NbiAFDRN2oM?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+            text=f'Вырезка свиная охлажденная вакуумная упаковка МИРАТОРГ, {m} кг {price_i * m} руб.')
 
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_387157001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
 
-    elif call.data == '33' and meat_t == 3:
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/rastitelnoe-maslo/podsolnechnoe-nerafinirovannoe-sloboda-1l')
+        price_total += price_i
 
         bot.send_message(
             chat_id=uid,
-            text=f'https://youtu.be/fibrZS7uj1Q?list=PLQzBJgojWxHPsKHnPxq5Nki4HTyLcxOyN')
+            text=f'Масло подсолнечное Слобода Ароматное, 1 л, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_469159001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/perec-chernyj-kotanyi-molotyj-20g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный KOTANYI молотый, 20г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_158902001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sahar-sol/fine-life-ekstra-v-solonke-250g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль FINE LIFE Экстра в солонке, 250г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_500639001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/art_623175')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка KOTANYI копченая молотая, 25г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_489610001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/ovoshchi-i-frukty/ovoshchi/svezhie-ovoshchi/chesnok-470374')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Чеснок, {price_i} руб./ кг.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_209242001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/aziatskaya-kuhnya/sous-soevyj-metro-chef-klassicheskij-1-l')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соус соевый Metro Chef Классический, 1 л, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_539102001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/aziatskaya-kuhnya/sous-metro-chef-sladkij-chili-1000-ml')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соус Metro Chef Сладкий чили, 1000 мл, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_519416001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
+
+
+    elif call.data == '41' and meat_t == 1:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Цена взята с сайта https://msk.metro-cc.ru')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/myasnye/govyadina/govyadina-ohlazhdennaya/dlya-zapekaniya-prajmbif')
+        price_total += price_i * m
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Говядина для запекания ПРАЙМБИФ, {m} кг {price_i * m} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_311807001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/ovoshchi-i-frukty/ovoshchi/svezhie-ovoshchi/art_481698')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Лук репчатый ранний, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_464435001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/kumin-celyj-zira-kotanyi-20g-617744')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Кумин целый (зира) KOTANYI, 20г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_459086001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/art_623175')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка KOTANYI копченая молотая, 25г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_489610001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/perec-chernyj-kotanyi-molotyj-20g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный KOTANYI молотый, 20г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_158902001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sahar-sol/fine-life-ekstra-v-solonke-250g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль FINE LIFE Экстра в солонке, 250г, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_500639001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bezalkogolnye-napitki/mineralnaya-voda/art_91738')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Вода газированная ПСЫЖ пэт, 1л, {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_82898001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
+
+
+    elif call.data == '41' and meat_t == 2:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Цена взята с сайта https://msk.metro-cc.ru')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/myasnye/baranina/baranina-ohlazhdennaya/dlya-shashlyka-myaso-est-400-g')
+        price_total += price_i * m * 2.5
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Баранина для шашлыка МЯСО ЕСТЬ! охлажденная, {m} кг {price_i * m * 2.5} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_44121001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/myasnaya-gastronomiya/delikatesy/salo-s-chernym-percem-kusok-velkom-v-vakuumnoj-upakovke')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Сало баранье курдючное найти почти нереально, поэтому можно использовать это \n Сало с черным перцем кусок ВЕЛКОМ в вакуумной упаковке {price_i} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_95380001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/sahar-sol/fine-life-ekstra-v-solonke-250g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль FINE LIFE Экстра в солонке, 250г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_500639001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/kumin-celyj-zira-kotanyi-20g-617744')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Кумин целый (зира) KOTANYI, 20г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_459086001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/art_623175')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка KOTANYI копченая молотая, 25г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_489610001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/perec-chernyj-kotanyi-molotyj-20g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный KOTANYI молотый, 20г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_158902001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
+
+
+    elif call.data == '41' and meat_t == 3:
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Цена взята с сайта https://msk.metro-cc.ru')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/myasnye/kurica/kurica-ohlazhdennaya/file-kurinoe-bez-kozhi-petelinka-12707')
+        price_total += price_i * m
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Филе куриное без кожи ПЕТЕЛИНКА, {m} кг {price_i * m} руб.')
+
+        photo_upload('https://cdn.metro-cc.ru/ru/ru_pim_12707001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/sahar-sol/fine-life-ekstra-v-solonke-250g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Соль FINE LIFE Экстра в солонке, 250г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_500639001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/kumin-celyj-zira-kotanyi-20g-617744')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Кумин целый (зира) KOTANYI, 20г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_459086001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc('https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/art_623175')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Паприка KOTANYI копченая молотая, 25г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_489610001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/sousy-pripravy-specii/perec-chernyj-kotanyi-molotyj-20g')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Перец черный KOTANYI молотый, 20г, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_158902001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/bakaleya/rastitelnoe-maslo/podsolnechnoe-nerafinirovannoe-sloboda-1l')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Масло подсолнечное Слобода Ароматное, 1 л, {price_i} руб.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_469159001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        price_i = price_find_metrocc(
+            'https://msk.metro-cc.ru/category/ovoshchi-i-frukty/ovoshchi/svezhie-ovoshchi/chesnok-470374')
+        price_total += price_i
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Чеснок, {price_i} руб./ кг.')
+
+        photo_upload(
+            'https://cdn.metro-cc.ru/ru/ru_pim_209242001001_01.png?maxwidth=480&maxheight=460&format=jpg&quality=80')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Итоговая стоимость составит {price_total} руб.')
+
+        bot.send_message(
+            chat_id=uid,
+            text=f'Это по {round(price_total / n)} руб. с каждого, если вы скидываетесь)')
 
 
     back = [{'Назад': '23'}]
@@ -676,6 +1056,5 @@ def main_menu(call):
     bot.send_message(
         chat_id=uid, reply_markup=kb_back,
         text=f'Хотите вернуться назад?')
-
 
 bot.polling(none_stop=True)
