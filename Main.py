@@ -40,8 +40,12 @@ def photo_upload(photo_url):
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     global uid
+
+    if uid == 0:
+        bot.reply_to(message,
+                     f'Приятно познакомиться, {message.from_user.first_name}. Я бот, созданный для помощи людям, собирающимся поехать на шашлыки.')
+
     uid = message.from_user.id
-    bot.reply_to(message, f'Приятно познакомиться, {message.from_user.first_name}. Я бот, созданный для помощи людям, собирающимся поехать на шашлыки.')
 
     Meat = [
       [{'Свинина':'10'}, {'Говядина':'11'}], [{'Баранина':'12'}, {'Курица':'13'}]
@@ -51,7 +55,20 @@ def send_welcome(message):
 
     bot.send_message(
         chat_id=uid, reply_markup=kb_Meat,
-        text='Какое мясо вы предпочитаете: свинину, говядину,баранину или курицу?')
+        text='Какое мясо вы предпочитаете: свинину, говядину, баранину или курицу?')
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('01'))
+def back_to_meat_t(call):
+    Meat = [
+        [{'Свинина': '10'}, {'Говядина': '11'}], [{'Баранина': '12'}, {'Курица': '13'}]
+    ]
+
+    kb_Meat = Keyboa(items=Meat, copy_text_to_callback=True).keyboard
+
+    bot.send_message(
+        chat_id=uid, reply_markup=kb_Meat,
+        text='Какое мясо вы предпочтёте в этот раз: свинину, говядину, баранину или курицу?')
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('1'))
@@ -105,7 +122,8 @@ def last_menu(call):
 
     m = round(n * k, 1)
 
-    var = [{'Пошаговый рецепт приготовления':'30'}, {'Ссылка на видео-рецепт приготовления':'33'}, {'Список покупок':'31'}, {'Рекомендованная цена продуктов':'32'}]
+    var = [{'Пошаговый рецепт приготовления':'30'}, {'Ссылка на видео-рецепт приготовления':'33'}, {'Список покупок':'31'},
+           {'Рекомендованная цена продуктов':'32'}, {'Изменить вводные данные':'01'}]
 
     kb_recipe = Keyboa(items=var, copy_text_to_callback=True).keyboard
 
