@@ -83,7 +83,7 @@ def send_welcome(message):
         text='Какое мясо вы предпочитаете: свинину, говядину, баранину или курицу?')
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith('01'))
+@bot.callback_query_handler(func=lambda call: call.data.startswith('0'))
 def back_to_meat_t(call):
     Meat = [
         [{'Свинина': '10'}, {'Говядина': '11'}], [{'Баранина': '12'}, {'Курица': '13'}]
@@ -401,6 +401,7 @@ def main_menu(call):
         bot.send_message(
             chat_id=uid, reply_markup=kb_back,
             text=f'Хотите вернуться назад?')
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('4'))
 def price(call):
@@ -1056,5 +1057,6 @@ def price(call):
     bot.send_message(
         chat_id=uid, reply_markup=kb_back,
         text=f'Хотите вернуться назад?')
+
 
 bot.polling(none_stop=True)
