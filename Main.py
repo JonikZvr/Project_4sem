@@ -3,6 +3,7 @@ import urllib
 import requests
 from bs4 import BeautifulSoup
 import re
+import io
 
 from keyboa import Keyboa
 bot = telebot.TeleBot('1834705224:AAF_PjtpCiJYIweJWBKZFSqg6LaAmJrb63s')
@@ -53,13 +54,8 @@ def price_find_metrocc(url):
     return(price)
 
 def photo_upload(photo_url):
-    f = open('out.jpg', 'wb')
-    f.write(urllib.request.urlopen(
-        photo_url).read())
-    f.close()
-    img = open('out.jpg', 'rb')
-    bot.send_photo(uid, img)
-    img.close()
+    photo = io.BytesIO(urllib.request.urlopen(photo_url).read())
+    bot.send_photo(uid, photo)
 
 
 @bot.message_handler(commands=['start', 'help'])
